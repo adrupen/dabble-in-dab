@@ -5,6 +5,12 @@
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" type="text/css">
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
 	<style type="text/css">
+		html, body {
+			width: 100%;
+			height: 100%;
+			margin: 0px;
+			background-color: #2a2f35;
+		}
 		#DABnetwork {
 			width: 100%;
 			height: 100%;
@@ -37,6 +43,26 @@
 		var options = {};
 		var network = new vis.Network(container, data, options);
 
+		httpGetAsync("http://api.geodab.eu/dab/services/api-rest/sources", function(result){
+			for (var i = result.reports.length - 1; i >= 0; i--) {
+				nodes.add({
+					id: result.reports[i].id,
+					label: result.reports[i].title,
+				});
+			}
+		});
+
+
+		function httpGetAsync(theUrl, callback)
+		{
+		    var xmlHttp = new XMLHttpRequest();
+		    xmlHttp.onreadystatechange = function() { 
+		        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
+		            callback(xmlHttp.responseText);
+		    }
+		    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
+		    xmlHttp.send(null);
+		}
 	</script>
 </body>
 </html>
