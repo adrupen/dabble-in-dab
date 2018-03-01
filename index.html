@@ -59,7 +59,8 @@
 		    var xmlHttp = new XMLHttpRequest();
 		    xmlHttp.onreadystatechange = function() { 
 		        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-		            callback(xmlHttp.responseText);
+		        	var result = JSON.parse(xmlHttp.responseText);
+		            callback(result);
 		    }
 		    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
 		    xmlHttp.send(null);
