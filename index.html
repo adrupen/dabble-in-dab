@@ -26,6 +26,8 @@
 
 	</div>
 	<script type="text/javascript">
+		var api_url = "http://api.geodab.eu/dab/services/api-rest";
+
 		var nodes = new vis.DataSet([
 				{id: 1, label: "DAB"},
 			]);
@@ -56,7 +58,7 @@
 		};
 		var network = new vis.Network(container, data, options);
 
-		function httpGetAsync(theUrl, callback)
+		function getData(theUrl, callback)
 		{
 		    var xmlHttp = new XMLHttpRequest();
 		    xmlHttp.onreadystatechange = function() { 
@@ -65,10 +67,10 @@
 		            callback(result);
 		    }
 		    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
-		    xmlHttp.send(null);
+		    xmlHttp.send();
 		}
 
-		httpGetAsync("http://api.geodab.eu/dab/services/api-rest/sources", function(result){
+		getData(api_url+"/sources", (result) => {
 			for (var i = result.reports.length - 1; i >= 0; i--) {
 				nodes.add({
 					id: result.reports[i].id,
