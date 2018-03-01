@@ -44,6 +44,7 @@
 		var network = new vis.Network(container, data, options);
 
 		httpGetAsync("http://api.geodab.eu/dab/services/api-rest/sources", function(result){
+			console.log(result);
 			for (var i = result.reports.length - 1; i >= 0; i--) {
 				nodes.add({
 					id: result.reports[i].id,
