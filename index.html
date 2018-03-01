@@ -43,21 +43,6 @@
 		var options = {};
 		var network = new vis.Network(container, data, options);
 
-		httpGetAsync("http://api.geodab.eu/dab/services/api-rest/sources", function(result){
-			console.log(result);
-			for (var i = result.reports.length - 1; i >= 0; i--) {
-				nodes.add({
-					id: result.reports[i].id,
-					label: result.reports[i].title,
-				});
-				edges.add({
-					from: 1,
-					to: result.reports[i].id,
-				});
-			}
-		});
-
-
 		function httpGetAsync(theUrl, callback)
 		{
 		    var xmlHttp = new XMLHttpRequest();
@@ -69,6 +54,19 @@
 		    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
 		    xmlHttp.send(null);
 		}
+
+		httpGetAsync("http://api.geodab.eu/dab/services/api-rest/sources", function(result){
+			for (var i = result.reports.length - 1; i >= 0; i--) {
+				nodes.add({
+					id: result.reports[i].id,
+					label: result.reports[i].title,
+				});
+				edges.add({
+					from: 1,
+					to: result.reports[i].id,
+				});
+			}
+		});
 	</script>
 </body>
 </html>
