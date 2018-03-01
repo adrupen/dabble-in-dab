@@ -80,7 +80,7 @@
 		}
 
 		function getDatasets(id, callback){
-			var http = new XMLHttpRequest();
+			var xhttp = new XMLHttpRequest();
 			var url = "http://api.geodab.eu/dab/services/api-rest/datasets/report";
 			var params = {
 				"where": {},
@@ -97,27 +97,26 @@
 				"termFrequency": "",
 				"extensionRelation": ""
 			};
-			http.open("POST", url, true);
+			params = "";
 
-			//Send the proper header information along with the request
-			http.setRequestHeader("Content-type", "application/json");
-			http.setRequestHeader("Accept", "application/json");
-			http.setRequestHeader("Access-Control-Allow-Origin", "*");
-			http.setRequestHeader("Origin", "https://adrupen.github.io/dabble-in-dab/");
-
-			http.onreadystatechange = function() {//Call a function when the state changes.
-			    if(http.readyState == 4) {
-			    	if(http.status == 200){
-			        	var result = JSON.parse(http.responseText);
-			        	console.log("Finished");
+			xhttp.onreadystatechange = function() {//Call a function when the state changes.
+			    if(xhttp.readyState == 4) {
+			    	if(xhttp.status == 200){
+			        	var result = JSON.parse(xhttp.responseText);
 		            	callback(result.reports);
 		        	}
 		        	else{
-		        		console.log("Error: " + http.statsText);
+		        		console.log("Error: " + xhttp.statsText);
 		        	}
 			    }
 			}
-			http.send(params);
+
+			xhttp.open("GET", url, true);
+
+			//Send the proper header information along with the request
+			xhttp.setRequestHeader("Content-type", "application/json");
+
+			xhttp.send();
 		}
 
 		getSources(addNodes);
