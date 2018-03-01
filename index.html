@@ -26,7 +26,8 @@
 
 	</div>
 	<script type="text/javascript">
-		var api_url = "http://api.geodab.eu/dab/services/api-rest";
+		'use strict'
+		var groups = [];
 
 		var nodes = new vis.DataSet([
 				{id: 1, label: "DAB"},
@@ -43,11 +44,12 @@
 		};
 
 		var options = {
+			interaction: {hover: true},
 			nodes: {
 				shape: "dot",
-				size: 25,
+				size: 30,
 				font: {
-					size: 30,
+					size: 10,
 					color: "#FFFFFF",
 				},
 				borderWidth: 2,
@@ -58,32 +60,101 @@
 		};
 		var network = new vis.Network(container, data, options);
 
-		function getData(theUrl, callback)
+		function getSources(callback)
 		{
-		    var xmlHttp = new XMLHttpRequest();
-		    xmlHttp.onreadystatechange = function() { 
-		        if (xmlHttp.readyState == 4 && xmlHttp.status == 200)
-		        	var result = JSON.parse(xmlHttp.responseText);
-		            callback(result);
+		    var http = new XMLHttpRequest();
+		    var url = "http://api.geodab.eu/dab/services/api-rest/sources"
+		    http.onreadystatechange = function() { 
+			    if(http.readyState == 4) {
+			    	if(http.status == 200){
+			        	var result = JSON.parse(http.responseText);
+		            	callback(result.reports);
+		        	}
+		        	else{
+		        		console.log("Error: " + http.statsText);
+		        	}
+			    }
 		    }
-		    xmlHttp.open("GET", theUrl, true); // true for asynchronous 
-		    xmlHttp.send();
+		    http.open("GET", url, true); // true for asynchronous 
+		    http.send();
 		}
 
-		getData(api_url+"/sources", (result) => {
-			if(typeof result !== 'undefined' && typeof result.reports !== 'undefined'){
-				for (var i = result.reports.length - 1; i >= 0; i--) {
+		function getDatasets(id, callback){
+			var http = new XMLHttpRequest();
+			var url = "http://api.geodab.eu/dab/services/api-rest/datasets/report";
+			var params = {
+				"where": {},
+				"when": {},
+				"what": {},
+				"who": [],
+				"sources": [id],
+				"searchId": "",
+				"start": 1,
+				"pageSize": 5,
+				"timeout": 10000,
+				"searchFields": "",
+				"spatialRelation": "",
+				"termFrequency": "",
+				"extensionRelation": ""
+			};
+			http.open("POST", url, true);
+
+			//Send the proper header information along with the request
+			http.setRequestHeader("Content-type", "application/json");
+			http.setRequestHeader("Accept", "application/json");
+
+			http.onreadystatechange = function() {//Call a function when the state changes.
+			    if(http.readyState == 4) {
+			    	if(http.status == 200){
+			        	var result = JSON.parse(http.responseText);
+			        	console.log("Finished");
+		            	callback(result.reports);
+		        	}
+		        	else{
+		        		console.log("Error: " + http.statsText);
+		        	}
+			    }
+			}
+			http.send(params);
+		}
+
+		getSources(addNodes);
+
+    	network.on("click", function (params) {
+	        params.event = "[original event]";
+	        console.log('click event, getNodeAt returns: ' + this.getNodeAt(params.pointer.DOM));
+	        console.log(params);
+    		if(typeof params !== 'undefined' && params.nodes.length > 0){
+    			console.log("Runing fetch func");
+		        getDatasets(params.nodes[0], addNodes);
+	    	}
+	    });
+    	
+	    function addNodes(newNodes){
+			if(typeof newNodes !== 'undefined'){
+				for (var i = newNodes.length - 1; i >= 0; i--) {
+					var parent = typeof newNodes.parent !== 'undefined' ? newNodes.parent : 1;
+					if(parent === 1){
+						groups.push(i);
+						group = i;
+					}
+					else{
+						group = 10;
+					}
+					var group
 					nodes.add({
-						id: result.reports[i].id,
-						label: result.reports[i].title,
+						id: newNodes[i].id,
+						label: newNodes[i].title,
+						group: group,
 					});
 					edges.add({
-						from: 1,
-						to: result.reports[i].id,
+						from: parent,
+						to: newNodes[i].id,
 					});
 				}
 			}
-		});
+	    }
+		
 	</script>
 </body>
 </html>
