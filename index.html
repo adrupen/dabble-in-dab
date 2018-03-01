@@ -71,15 +71,17 @@
 		}
 
 		getData(api_url+"/sources", (result) => {
-			for (var i = result.reports.length - 1; i >= 0; i--) {
-				nodes.add({
-					id: result.reports[i].id,
-					label: result.reports[i].title,
-				});
-				edges.add({
-					from: 1,
-					to: result.reports[i].id,
-				});
+			if(typeof result !== 'undefined' && typeof result.reports !== 'undefined'){
+				for (var i = result.reports.length - 1; i >= 0; i--) {
+					nodes.add({
+						id: result.reports[i].id,
+						label: result.reports[i].title,
+					});
+					edges.add({
+						from: 1,
+						to: result.reports[i].id,
+					});
+				}
 			}
 		});
 	</script>
