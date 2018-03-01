@@ -50,6 +50,10 @@
 					id: result.reports[i].id,
 					label: result.reports[i].title,
 				});
+				edges.add({
+					from: 1,
+					to: result.reports[i].id,
+				});
 			}
 		});
 
